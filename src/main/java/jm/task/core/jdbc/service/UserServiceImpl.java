@@ -1,34 +1,33 @@
 package jm.task.core.jdbc.service;
 
-import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
+import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 import jm.task.core.jdbc.model.User;
-
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
-    UserDaoJDBCImpl userDaoJDBC = new UserDaoJDBCImpl();       //экземпляр класса UserDaoJDBCImpl
+    UserDaoHibernateImpl userDaoHibernate = new UserDaoHibernateImpl();
 
-    public void createUsersTable() {    //создать таблицу пользователей
-        userDaoJDBC.createUsersTable();
+    public void createUsersTable() {
+        userDaoHibernate.createUsersTable();
     }
 
-    public void dropUsersTable() {     //удалить таблицу пользователей
-        userDaoJDBC.dropUsersTable();
+    public void dropUsersTable() {
+        userDaoHibernate.dropUsersTable();
     }
 
-    public void saveUser(String name, String lastName, byte age) {   //сохранить пользователя
-        userDaoJDBC.saveUser(name,lastName,age);
+    public void saveUser(String name, String lastName, byte age) {
+        userDaoHibernate.saveUser(name,lastName,age);
     }
 
-    public void removeUserById(long id) {   //удалить пользователя по идентификатору
-        userDaoJDBC.removeUserById(id);
+    public void removeUserById(long id) {
+        userDaoHibernate.removeUserById(id);
     }
 
-    public List<User> getAllUsers() {     //получить всех пользователей
-        return userDaoJDBC.getAllUsers();
+    public List<User> getAllUsers() {
+        return userDaoHibernate.getAllUsers();
     }
 
-    public void cleanUsersTable() {    //очистить таблицу пользователей
-        userDaoJDBC.cleanUsersTable();
+    public void cleanUsersTable() {
+        userDaoHibernate.cleanUsersTable();
     }
 }
