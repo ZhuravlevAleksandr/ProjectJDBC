@@ -8,81 +8,81 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    private final Connection connection = Util.getConnection();    //соединение с БД
 
     public UserDaoJDBCImpl() {
 
     }
 
-    public void createUsersTable() {     //создать таблицу пользователей
-        try (Statement statement = connection.createStatement()) {   //экземпляр Statement для выполнения SQL – запросов
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS jdbc_kata.users" +  //создание таблицы
-                    "(id mediumint not null auto_increment," +  //первый столбец id, генерация уникального идентификатора для новых строк
-                    " name VARCHAR(50), " +    //второй столбец name, строковый тип
-                    "lastname VARCHAR(50), " +   //третий столбец lastname, строковый тип
-                    "age tinyint, " +   //четвертый столбец age, числовой тип
-                    "PRIMARY KEY (id))"); //указание, что поле id является первичным ключом
+    public void createUsersTable() {
+        try (Connection connection = Util.getConnection(); Statement statement = connection.createStatement()) {
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS jdbc_kata.users" +
+                    "(id mediumint not null auto_increment," +
+                    " name VARCHAR(50), " +
+                    "lastname VARCHAR(50), " +
+                    "age tinyint, " +
+                    "PRIMARY KEY (id))");
             System.out.println("Таблица создана");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void dropUsersTable() {     //удалить таблицу пользователей
-        try (Statement statement = connection.createStatement()) {     //экземпляр Statement для выполнения SQL – запросов
-            statement.executeUpdate("Drop table if exists jdbc_kata.users"); //удаление таблицы
+    public void dropUsersTable() {
+        try (Connection connection = Util.getConnection(); Statement statement = connection.createStatement()) {
+            statement.executeUpdate("Drop table if exists jdbc_kata.users");
             System.out.println("Таблица удалена");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void saveUser(String name, String lastName, byte age) {       //сохранить пользователя
-        String sql = "INSERT INTO jdbc_kata.users(name, lastname, age) VALUES(?,?,?)";    //команда создания строки
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {   //создание строки, подготовка к вставке параметров
-            preparedStatement.setString(1, name);    //вставка параметра name
-            preparedStatement.setString(2, lastName);   //вставка параметра lastName
-            preparedStatement.setByte(3, age);     //вставка параметра age
-            preparedStatement.executeUpdate();    //обновление БД
+    public void saveUser(String name, String lastName, byte age) {
+        String sql = "INSERT INTO jdbc_kata.users(name, lastname, age) VALUES(?,?,?)";
+        try (Connection connection = Util.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setByte(3, age);
+            preparedStatement.executeUpdate();
             System.out.println("User с именем – " + name + " добавлен в базу данных");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void removeUserById(long id) {     //удалить пользователя по идентификатору
-        try (Statement statement = connection.createStatement()) {    //экземпляр Statement для выполнения SQL – запросов
-            String sql = "DELETE FROM jdbc_kata.users where id";  //команда на удаление пользователя по id
-            statement.executeUpdate(sql);    //удаление пользователя по id
+    public void removeUserById(long id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+        try (Connection connection = Util.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
             System.out.println("User удален");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public List<User> getAllUsers() {      //получить всех пользователей
-        List<User> allUser = new ArrayList<>();    //список
-        String sql = "SELECT id, name, lastName, age FROM jdbc_kata.users";    //команда извлечения пользователей из БД
-        try (Statement statement = connection.createStatement()) {    //экземпляр Statement для выполнения SQL – запросов
-            ResultSet resultSet = statement.executeQuery(sql);    //извлечение пользователей из БД
+    public List<User> getAllUsers() {
+        List<User> allUser = new ArrayList<>();
+        String sql = "SELECT id, name, lastName, age FROM jdbc_kata.users";
+        try (Connection connection = Util.getConnection(); Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 User user = new User();
-                user.setId(resultSet.getLong("id"));       //возврат id
-                user.setName(resultSet.getString("name"));     //возврат name
-                user.setLastName(resultSet.getString("lastName"));     //возврат lastName
-                user.setAge(resultSet.getByte("age"));     //возврат age
-                allUser.add(user);    //добавляем в коллекцию
+                user.setId(resultSet.getLong("id"));
+                user.setName(resultSet.getString("name"));
+                user.setLastName(resultSet.getString("lastName"));
+                user.setAge(resultSet.getByte("age"));
+                allUser.add(user);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return allUser;    //возвращаем коллекцию
+        return allUser;
     }
 
-    public void cleanUsersTable() {      //очистить таблицу пользователей
-        String sql = "DELETE FROM jdbc_kata.users";   //команда очистки таблицы
-        try (Statement statement = connection.createStatement()) {   //экземпляр Statement для выполнения SQL – запросов
-            statement.executeUpdate(sql);    //очистка таблицы
+    public void cleanUsersTable() {
+        String sql = "DELETE FROM jdbc_kata.users";
+        try (Connection connection = Util.getConnection(); Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
             System.out.println("Таблица очищена");
         } catch (SQLException e) {
             e.printStackTrace();
