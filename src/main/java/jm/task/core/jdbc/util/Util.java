@@ -10,14 +10,28 @@ public class Util {
     private static final String LOGIN = "root";
     private static final String PASSWORD = "root12345";
 
-    public static Connection getConnection() {
-        Connection connection = null;
+    private static Connection connection;
+
+    private static void connectionInitialization() {
         try {
             Class.forName(DRIVER);
             connection = DriverManager.getConnection(HOST, LOGIN, PASSWORD);
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void connectionСlose() {
+        try {
+            connection.close();
+            System.out.println("Соединение закрыто");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Connection getConnection() {
+        connectionInitialization();
         return connection;
     }
 }
